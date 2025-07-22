@@ -37,7 +37,7 @@ class BloodRelationsApp:
       self.result_text.config(state='disabled')
     
     except Exception as e:
-      messagebox.showerror("Error", f"Failed to parse statement: str(e)")
+      messagebox.showerror("Error", f"Failed to parse statement: {str(e)}")
       
   def parse_complex_relation(self, statement):
     self.graph = defaultdict(list)
@@ -74,3 +74,25 @@ class BloodRelationsApp:
     
     parts = re.split(r'[,.]|who is|married to', statement)
     parts = [part.strip() for part in parts if part.strip()]
+    
+    def extract_names(part):
+      name_pattern = r'([A-Z][a-z]*(?:\s[A-Z][a-z]*)?)'
+      names = re.findall(name_pattern, part)
+      return [ n for n in names if n.lower() not in relations and n.lower not in ['is','or','and','of','to','the']]
+    
+    for part in parts:
+      for rel, (gender, rel_type, level) in relations.items():
+        if rel in part:
+          names = extract_names(part)
+          if len(names) >=2:
+            person1, person2 = names[:2]
+            self.names.add(person1)
+            self.names.add(person2)
+            
+            if person1 not in self.genders or self.genders[person1] == gender or self.genders[person1] == 'unkown':
+              self.genders[person1] = gender
+              
+            if person2 not in self.genders or self.genders[person2] == gender or self.genders[person1] == 'unkown':
+              self.genders[person2] = gender
+              
+            
