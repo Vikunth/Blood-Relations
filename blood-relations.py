@@ -95,4 +95,6 @@ class BloodRelationsApp:
             if person2 not in self.genders or self.genders[person2] == gender or self.genders[person1] == 'unkown':
               self.genders[person2] = gender
               
-            
+            if rel_type == 'parent':
+              self.graph[person1].append((person2, rel, level))
+              self.graph[person2].append((person1, f"child_of_{rel}", -level))
